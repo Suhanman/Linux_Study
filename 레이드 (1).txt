@@ -1,0 +1,144 @@
+mdadm 명령어 
+
+--create /dev/md[0~127]: 장치명 지정
+
+--level=[레이드 레벨]
+ 레이드 레벨 지정
+
+--raid - devices = [숫자] [dev1] [dev2] ...
+사용할 디스크의 개수와 장치 지정
+
+--stop /dev/md?
+mdadm --detail --scan(이 명령어를 입력해서 나온 아래 문구를 입력해줘야함)
+*RAID 구성정보 출력
+ARRAY /dev/md10 metadata=1.2 name=srv1:10 UUID=e418ad80:5fb923eb:91fac09d:8daf2d86
+
+vi /etc/mdadm/mdadm.conf
+
+update-initramfs -u : 리눅스의 부팅시 생기는 이미지를 잠시업데이트.
+
+mdadm --create /dev/md10 --level=linear --raid-devices=2 /dev/sdb1 /dev/sdc1
+
+============================
+DNS(Domain Name System)
+-도메인과 IP주소를 상호변환해주는 시스템
+-IP 주소를 사람이 사용하기 쉬운 문자 주소 (도메인)으로 변환하여 사용할 수 있도록 한다.
+
+*도메인 , Domain
+-인터넷 상에서 쓰이는 문자주소
+
+*DNS 구성 요소 
+1) FQDN (Fully Qualifed Domain Name)
+-전체 도메인
+
+naver.com, google.com
+
+www.naver.com
+
+2) Root Domain
+- 모든 도메인의 시작점.
+- 도메인은 계층구조의 최상위 계층
+- 일반적으로 . 으로 표현한다
+www.naver.com.(맨 끝이 루트도메인)
+- 전 세계 지리적으로 분산된 root domain 서버가 존재하고 이 서버가 
+  TLD(TOP- LEVEL - Domain) 의 정보를 관리하고 필요시 제공해준다
+
+3) TLD (Top-Level-Domain) (최상위 도메인)
+- FQDN의 가장 마지막 필드에 위치한 도메인
+- 해당 도메인이 어떤 목적을 가지는지 나타낸다.
+- 해당 도메인에 속한 하위 도메인들에 대한 정보를 유지 및 관리한다.
+ www.naver.com <-여기서 com
+.com -> 상업용/ .net -> 초기에는 네트워크 업체용 도메인, 현재는 다목적/
+ .org -> 비 영리적 도메인, 오픈소스. / .edu -> 교육 기관 도메인 
+
+4) Authoritative DNS (권한형 DNS)
+- 특정 도메인에 대한 실제 IP를 가지고 있는 DNS 서버
+- 도메인 및 사이트 관리자가 직접 DNS에 관한 정보를 관리.
+
+[패키지 이름]
+bind9
+[방화벽 포트]
+53/udp
+[설정파일]
+/etc/bind/named.conf.default-zones
+
+zone "itbank.com"
+ -도메인 정의 (zone 정의)
+
+type master;
+-주 DNS 서버 설정 
+
+file "~~파일경로~~"
+- 해당 도메인에 관한 레코드 정보를 다룰 파일들을 정의
+- 생성 필요
+
+
+zone "itbank.com"{
+        type master;
+        file "/etc/bind/itbank.com.zone";
+};
+~
+
+
+TTL (Time to Live)
+-DNS 캐시가 유지되는 시간
+
+@ : 현재 사용할 도메인.
+IN : 인터넷 공간에서 쓰일 것이라는 걸 선언
+SOA :
+mail.itbank.com -> 문제가 있으면 이 이메일로 연락주쇼
+
+Serial : 시리얼 번호 , 해당 존파일이 변경될 때마다 증가한다.
+	주 DNS 서버에서 올라간 시리얼 번호가 보조 DNS에 적용된다.
+ 	보조 DNS 가 주 DNS의 변경을 추적하기 위해 사용한다.
+
+Refresh : 보조 DNS가 주 DNS로 부터 파일을 받아오는 간격
+Retry: Refresh 실패 시, 재시도 간격
+
+Expire : 존파일 만료 시간. 망가졌다!
+	해당 시간이 지날때까지 정보를 갱신받지 못하면
+	보조 DNS는 해당 정보를 유효하지 않다고 판단한다.
+
+Negative Cache TTL : Time to Live 잘못된 질의에 대한 응답을 캐시하는 시간.
+
+itbank.com.zone 내용
+$TTL    604800
+@       IN      SOA     itbank.com      mail.itbank.com.(
+                        0       ; Serial
+                        604800  ; Refresh
+                        86400   ; Retry
+                        2419200 ; Expire
+                        604800 ) ; Negative Cache TTL
+
+        IN      NS      itbank.com.
+        IN      A       192.168.108.10 # itbank.com = 192.168.108.10
+
+www  IN      A       192.168.108.20 # www.itbank.com=192.168.108.20
+abc IN        A      192.168.108.123 # abc.itbank.com = 192.168.108.123
+
+[데몬 이름]
+bind9 , named
+
+------------------------
+[slave]
+노예 서버에 똑같이 패키지 설치!
+그후 named 설정파일에 슬레이브라는 이름으로 추가.
+
+
+zone "it.com" {
+        type slave;
+        file "it.com.zone";
+        masters { 192.168.108.10; };
+};
+이후 /var/cache/bind/ 에서 제대로 받아졌는지를 확인
+
+열어야 하는 방화벽
+ufw enable
+ufw allow 22/tcp
+ufw allow 53/udp
+ufw allow 53/tcp
+-방화벽 설정
+
+apt install -y bind9
+
+===============================

@@ -1,0 +1,50 @@
+ DNS 를 다음과 같이 구성하시오.
+ ( 방화벽 enable )
+
+ DNS_server : 192.168.108.10
+
+ test1.it.com -> 192.168.108.10
+ test2.it.com -> 192.168.108.20 
+
+
+ # ufw enable
+ # ufw allow 22/tcp
+ # ufw allow 53/udp
+ - 방화벽 설정
+
+ # apt install -y bind9
+ - 패키지 설치
+
+ # vi /etc/bind/named.conf.default-zones
+==================
+zone "it.com" {
+        type master;
+        file "/etc/bind/it.com.zone";
+};
+===================
+
+
+ # vi /etc/bind/it.com.zone
+================
+$TTL    604800
+@       IN      SOA     it.com. mail.it.com. (
+                        0       ; Serial
+                        604800  ; Refresh
+                        86400   ; Retry
+                        2419200 ; Expire
+                        604800 ) ; Negative Cache TTL
+
+
+        IN      NS      it.com.
+        IN      A       192.168.108.10
+
+test1   IN      A       192.168.108.10
+test2   IN      A       192.168.108.20
+====================
+
+ # systemctl restart bind9
+ # systemctl status bind9
+
+
+
+

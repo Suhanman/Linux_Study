@@ -1,0 +1,125 @@
+
+Virtual Host, 가상 호스트
+- 하나의  서버에서 여러 웹 사이트를 운영할 수 있게 해주는 기능
+-
+
+/etc/apache2/sites-enabled/000-default.conf
+에서 
+<VirtualHost *:65000>
+        DocumentRoot /home/page
+</VirtualHost>
+이렇게 추가해줘야한다
+
+alias 접속에는 / 까지 붙여줘야한다.
+
+--------------------------
+nginx
+vi /etc/nginx/sites-enabled/default
+
+41 : root /var/www/html; Document Root
+
+44 : index.html;  웹사이트 html 설정.
+===================
+DB 설정
+
+데이터 : 정보의 단편적인 조각
+ 
+정보 : 데이터를 수집하고 가공해 의미를 부여한 결과물.
+
+데이터 베이스 : 데이터를 효율적으로 저장하고 활용할 수 있도록
+	       체계적으로 조직화한 데이터들의 집합체.
+
+DBMS : (DataBase Management System)
+-데이터 베이스 관리 시스템
+-데이터 베이스를 효율적으로 관리하고 다루기 위한 소프트웨어
+-DBMS 를 사용하여 데이터베이스의 생성 , 삭제 ,수정 등의 관리작업을 할 수 있다.
+-Oracle, mySQL, mariaDB 등 DBMS 가 존재한다.
+
+SQL ( Structured Query Language)
+- DBMS 내부에서 데이터를 관리하기 위해 사용되는 표준화되는 언어.
+- 대부분의 DBMS에서 일관되게 사용할 수 있다.
+
+*데이터베이스의 구성 요소
+1)데이터 베이스
+-데이터들을 체계적으로 저장하고 관리하기 위해 사용하는 시스템
+
+2)테이블
+- 실제 데이터들이 저장되는 구성 요소
+- 데이터들을 구조화해 저장해놓은 데이터들의 실제 집합
+
+3) 레코드, 로우(Record,Row)
+-테이블의 행
+
+4) 필드, 컬럼( Field, Colume)
+-테이블의 열 
+
+DBMS -> 데이터 베이스 -> 테이블 -> 데이터
+
+=============
+[패키지 이름]
+mariadb-server
+
+=============
+>system clear;
+OR
+[ctrl + L]
+ - 화면 정리
+
+>show databases;
+- DB 확인
+>create databses [DB명];
+- DB 생성
+> drop database[DB명];
+- DB 삭제
+>show tables;
+-테이블 확인
+
+테이블 만들기
+->MariaDB [itbank_db]> create table itbank_tb(num int(4), name char(20));
+> create table [테이블명] ([필드 정의]);
+
+* MariaDB 자료형
+-테이블을 생성할 때 각 필드에 들어갈 데이터들의 자료형을 정해줘야한다.
+-자료형이 지정되면 해당자료형에 해당하는 데이터만 입력이 가능하다.
+
+int : 정수
+float: 실수
+char : 고정 길이 문자열
+         어떤 데이터를 넣든 데이터의 길이가 고정
+
+varchar : 가변 길이 문자열
+	문자열의 길이에 맞춰 데이터의 길이가 변한다
+
+>desc [테이블 명];
+ - 테이블 구조 출력
+
+>drop table[ 테이블명 ] ;
+-테이블 삭제
+
+>insert into [테이블명] values [값1], [값2], ...);
+ - 레코드 입력
+
+>select [필드명] from [필드명];
+- 레코드 확인
+
+>delete from itbank_tb where [필드] = [값];
+-레코드 삭제
+
+>update [테이블명] set [필드]=[값] where [필드]=[값];
+-레코드 수정
+
+ grant all privileges on *.* to 'test'@'%' identified by 'It1';
+		DB.Table
+itbank_DB.*
+flush privileges;
+[설정 파일]
+/etc/mysql/mariadb.conf.d/50-server.cnf
+27# bind-address = 127.0.0.1 (주석처리)
+
+[데몬 이름]
+mairadb
+[포트번호]
+3306/tcp
+
+mysql -h 192.168.108.10 -u test -p
+클라이언트에서 해당 데이터베이스로 원격접속.

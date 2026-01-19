@@ -1,0 +1,61 @@
+
+Proxy, 프록시
+-'대리인' 역할을 수행하는 서버.
+-웹 클라이언트와 웹서버 사이에서 데이터를 상호전달해주는 대리인 역할을 한다.
+
+user <- proxy <- web
+
+user -> proxy -> web 
+
+프록시 장점
+1) 웹 서핑 속도 향상 
+2) 검색 제한을 피하기 위해 사용
+3) 특정 사이트의 접근을 차단!
+=============================
+[패키지 이름]
+squid
+[설정 파일]
+/etc/squid/squid.conf
+
+acl [ACL명] src [IP 대역]
+ - ACL 정의
+ *ACL, Access Conrtol List
+-특정 이용자를 정의하고 해당 이용자들에 대한 접근을 허용, 차단할 때 사용된다.
+
+-번호, 이름을 사용하여 정책을 생성, 해당 정책을 통해 접근을 필터링.
+
+ http_access [allow/deny] [ACL 명]
+-특정 ACL에 관한 접근제어
+allow : 허용 / deny :거부 
+
+cache_dir ufs /var/spool/squid 1000 16 256
+-캐시 저장과 관련된 설정.
+
+[포트 번호]
+3128/tcp
+
+	192.168.108.0/255.255.255.0
+
+========================
+부하 분산.
+
+1번 서버를 쓰다가 1번 서버가 고장나버리면 전체 서비스가 마비...!
+그런일 벌어지면 안되죠.
+1대보다 2대가 좋고 2대보다 3대가 좋죠.
+
+haproxy
+
+설정파일
+/etc/haproxy/haproxy.cfg
+
+frontend itbank_front
+        bind *:80
+        default_backend itbank_back
+
+backend itbank_back
+        balance roundrobin
+        server srv2 192.168.108.20:80 check
+        server srv3 192.168.108.30:80 check
+
+
+

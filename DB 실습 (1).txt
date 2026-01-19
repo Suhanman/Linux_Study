@@ -1,0 +1,70 @@
+ 다음의 조건에 맞추어 제시된 테이블을 생성하시오.
+ 조건1. 방화벽 활성화 상태로 진행 ( 3306/tcp )
+ 조건2. 서버1 에서 DB 서버 구축
+ 조건3. DB 클라이언트(서버2) 에서 DB 접속한 상태로 작업 할 것
+
+ DB : my_DB
+ Table : my_TB
+
+ # ufw enable
+ # ufw allow 22/tcp
+ # ufw allow 3306/tcp
+ - 방화벽 설정
+
+ # apt install -y mariadb-server
+ - 패키지 설치
+
+ # mysql -u root -p
+
+ > grant all privileges on *.* to 'itbank'@'192.168.108.%' identified by 'It1';
+
+ > flush privileges;
+
+# vi /etc/mysql/mariadb.conf.d/50-server.cnf
+======================
+ 27 #bind-address            = 127.0.0.1
+======================
+
+# systemctl restart mariadb
+
+
+-------------------------------
+[클라이언트]
+# apt install -y mariadb-client
+- 클라이언트 패키지 설치
+
+# mysql -h 192.168.108.10 -u itbank -p
+ - DBMS 접속
+
+> create database my_DB;
+
+> use my_DB;
+
+
+> create table my_TB (
+    -> name varchar(30),
+    -> age int(4),
+    -> email varchar(50),
+    -> phone_number char(30),
+    -> address varchar(200));
+
+
+> INSERT INTO my_TB VALUES(
+    -> 'Sam smith', 21, 'S@test.com', '010-1111-1111', 'UK');
+
+> INSERT INTO my_TB VALUES(
+    -> 'Taylor swift', 22, 'T@test.com', '010-2222-2222', 'USA');
+
+]> INSERT INTO my_TB VALUES(
+    -> 'BTS', 23, 'P@test.com', '010-3333-3333', 'KOR');
+
+ OR
+
+> INSERT INTO my_TB VALUES
+    -> ('Sam smith', 21, 'S@test.com', '010-1111-1111', 'UK'),
+    -> ('Taylor swift', 22, 'T@test.com', '010-2222-2222', 'USA'),
+    -> ('BTS', 23, 'B@test.com', '010-3333-3333', 'KOR');
+
+
+
+

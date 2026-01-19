@@ -1,0 +1,125 @@
+
+ 도커 컴포즈, Docker Compose
+ - 도커 컨테이너 기반의 애플리케이션을 정의하고 실행하기 위한 도구
+
+ - 컨테이너에 관한 설정을 하나의 파일(정의 파일)로 작성해 한 번에 여러 개의
+   컨테이너를 실행하고 종료 할 수 있도록 도와준다
+
+--------------------------------------
+ [ 패키지 이름 ]
+ docker-compose
+
+ * 명령어
+ # docker-compose up
+ - 도커 컴포즈 실행
+
+ # docker-compose down
+ - 도커 컴포즈 종료
+ - 컴포즈로 인해 생성된 컨테이너 모두 제거
+
+
+ * 도커 컴포즈 정의 파일 이름
+  docker-compose.yml
+
+=======================================
+
+ * 워드 프레스
+ - 사용자가 전문적인 웹 개발 지식 없이도 웹 사이트를 만들 수 있게
+   해주는 오픈소스 소프트웨어
+
+
+
+ [ 패키지 목록 ]
+ 1) apache2
+ 2) ghostscript 
+ 3) libapache2-mod-php
+ 4) php
+ 5) php-bcmath
+ 6) php-curl
+ 7) php-imagick
+ 8) php-intl
+ 9) php-json 
+ 10) php-mbstring
+ 11) php-mysql
+ 12) php-xml
+ 13) php-zip
+
+ # echo "<?php phpinfo(); ?>" > /var/www/html/info.php
+ - 설치 확인
+
+* DB 설정
+ # apt install -y maridb-server
+ - 패키지 설치
+ 
+ # mysql -u root -p
+ - DBMS 접속
+
+ > create database wp_db;
+ > grant all privileges on wp_db.* to 'wp_user'@'192.168.108.%' identified by 'It1';
+ > flush privileges;
+ - DB 및 DBMS 사용자 생성
+ 
+
+ # vi /etc/mysql/mariadb.conf.d/50-server.cnf
+ 27 #bind-address            = 127.0.0.1
+ - 주석 처리
+
+ # wget https://wordpress.org/wordpress-6.2.zip  
+ - 워드프레스 다운로드
+
+ # unzip wordpress-6.2.zip
+ - 압축 해제
+
+# cp wordpress/wp-config-sample.php wordpress/wp-config.php
+ - 설정 파일 생성
+
+ # vi wordpress/wp-config.php
+ - 설정 파일 작성
+=====================
+ 22 /** The name of the database for WordPress */
+ 23 define( 'DB_NAME', 'wp_db' );
+ 24
+ 25 /** Database username */
+ 26 define( 'DB_USER', 'wp_user' );
+ 27
+ 28 /** Database password */
+ 29 define( 'DB_PASSWORD', 'It1' );
+ 30
+ 31 /** Database hostname */
+ 32 define( 'DB_HOST', '192.168.108.10' );
+======================
+
+ # cp -r wordpress/*  /var/www/html/
+ - 설정 파일 복사
+
+ # chown www-data: /var/www/
+ # find /var/www/ -type d -exec chmod 2755 {} \;
+ # find /var/www/ -type f -exec chmod 664 {} \;
+ - 권한 설정
+
+ # rm /var/www/html/index.html
+ # systemctl restar apache2
+ - 데몬 재실행  
+
+ * 접속 테스트
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

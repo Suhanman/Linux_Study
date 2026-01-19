@@ -1,0 +1,59 @@
+ 1.
+ User : main
+ Document root : /home/main
+ 페이지 내용 : main page
+
+ # apt install -y apache2
+ - 패키지 설치
+
+ # useradd -m main
+ - 사용자 추가
+
+ # vi /etc/apache2/sites-enabled/000-default.conf
+======================
+ 12 DocumentRoot /home/main
+======================
+ - document root 설정
+
+
+# vi /etc/apache2/apache2.conf
+======================
+<Directory /home/main/>
+        Options Indexes FollowSymLinks
+        AllowOverride None
+        Require all granted
+</Directory>
+======================
+
+# chmod o+x /home/main/
+ - 권한 설정
+
+# echo "main page" > /home/main/index.html
+ - index 페이지 생성
+
+ # systemctl restart apache2
+ - 데몬 재실행
+
+--------------------------------------------------------------------------
+ 2. 
+  192.168.108.10/test1
+  페이지 내용 : test1 page
+
+
+ 3. 
+  192.168.108.10/test1/test2
+  페이지 내용 : test2 page
+
+
+* main, test1, test2 페이지 출력
+
+ hint. 모든 페이지 내용은 index.html 파일을 활용한다
+
+
+  # mkdir -p /home/main/test1/test2
+
+  # echo "test1 page" > /home/main/test1/index.html 
+  # echo "test2 page" > /home/main/test1/test2/index.html 
+
+
+

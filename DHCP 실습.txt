@@ -1,0 +1,60 @@
+ 다음에 정보에 맞춰 DHCP 를 구성 후 클라이언트에게 부여하시오
+
+ DHCP 서버 - 192.168.108.10
+
+ DHCP 대역 - 192.168.108.100 ~ 192.168.108.109
+
+ 게이트웨이 : 192.168.108.2
+
+ 서브넷 마스크 : 255.255.255.0
+
+ DNS : 168.126.63.1
+
+
+ 조건1. 클라이언트는 2개 사용하고 필요시 클론 생성
+ 조건2. 방화벽 활성화 상태로 작업
+
+
+ W10-1 -> 자동부여
+ W10-2 -> 192.168.108.109 고정 부여
+
+
+ # ufw enable
+ # ufw allow 22/tcp
+ # ufw allow 67/udp
+ - 방화벽 설정
+
+
+ # apt install -y isc-dhcp-server
+ - 패키지 설치
+
+ # vi /etc/dhcp/dhcpd.conf
+=====================
+subnet 192.168.108.0 netmask 255.255.255.0 {
+        range 192.168.108.100 192.168.108.109;
+
+        option routers 192.168.108.2;
+        option subnet-mask 255.255.255.0;
+        option domain-name-servers 168.126.63.1;
+
+        host Win10-2 {
+        hardware ethernet 00:0C:29:DE:28:4F;
+        fixed-address 192.168.108.109;
+        }
+}
+========================
+
+ # systemctl restart isc-dhcp-server
+ # systemctl status isc-dhcp-server
+ - 데몬 재실행 및 확인
+
+
+ * 클라이언트 확인
+ > ipconfig /release
+ > ipconfig /renew
+ > ipconfig /all
+
+
+
+
+
